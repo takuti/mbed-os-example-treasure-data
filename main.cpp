@@ -1,5 +1,4 @@
-/* WiFi Example
- * Copyright (c) 2016 ARM Limited
+/* Copyright (c) 2018 ARM Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +15,12 @@
 
 #include "mbed.h"
 #include "TCPSocket.h"
-#include "wifi-ism43362/ISM43362Interface.h"
+#include "EthernetInterface.h"
 #include "treasure-data-rest.h"
 
 #define BUFF_SIZE   100
 
-ISM43362Interface net;
-// WiFiInterface *wifi;
+EthernetInterface net;
 
 int main(void){
 
@@ -30,9 +28,8 @@ int main(void){
 
     printf("\r\nTreasure Data REST API Demo\n");
 
-    // Connect to Wifi
-    printf("\nConnecting to %s...\n", MBED_CONF_APP_WIFI_SSID);
-    int ret = net.connect(MBED_CONF_APP_WIFI_SSID, MBED_CONF_APP_WIFI_PASSWORD, NSAPI_SECURITY_WPA_WPA2);
+    // Connect with Ethernet
+    int ret = net.connect();
     if (ret != 0) {
         printf("\nConnection error: %d\n", ret);
         return -1;
@@ -43,7 +40,6 @@ int main(void){
     printf("IP: %s\n", net.get_ip_address());
     printf("Netmask: %s\n", net.get_netmask());
     printf("Gateway: %s\n", net.get_gateway());
-    printf("RSSI: %d\n\n", net.get_rssi());
 
     // Create Treasure data objects (Network, Database, Table, APIKey)
     TreasureData_RESTAPI* heap  = new TreasureData_RESTAPI(&net,"test_database","heap_info", MBED_CONF_APP_API_KEY);
