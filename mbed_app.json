@@ -1,0 +1,13 @@
+{
+  "macros": ["MBED_ALL_STATS_ENABLED"],
+  "config": {
+    "td_database": {
+      "help": "Treasure Data database name",
+      "value": "\"YOUR DATABASE NAME\""
+    },
+    "td_apikey": {
+      "help": "Treasure Data API key",
+      "value": "\"YOUR API KEY\""
+    }
+  }
+}

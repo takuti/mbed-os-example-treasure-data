@@ -16,126 +16,116 @@
 #include "mbed.h"
 #include "TCPSocket.h"
 #include "EthernetInterface.h"
-#include "treasure-data-rest.h"
+#include "TreasureData.h"
 
-#define BUFF_SIZE   100
+#define BUFF_SIZE 100
 
-EthernetInterface net;
+EthernetInterface network;
 
-int main(void){
-
-    int count = 0;
-
+int main(void) {
     printf("\r\nTreasure Data REST API Demo\n");
 
     // Connect with Ethernet
-    int ret = net.connect();
+    int ret = network.connect();
     if (ret != 0) {
-        printf("\nConnection error: %d\n", ret);
-        return -1;
+      printf("\nConnection error: %d\n", ret);
+      return -1;
     }
 
     printf("Success\n\n");
-    printf("MAC: %s\n", net.get_mac_address());
-    printf("IP: %s\n", net.get_ip_address());
-    printf("Netmask: %s\n", net.get_netmask());
-    printf("Gateway: %s\n", net.get_gateway());
+    printf("MAC: %s\n", network.get_mac_address());
+    printf("IP: %s\n", network.get_ip_address());
+    printf("Netmask: %s\n", network.get_netmask());
+    printf("Gateway: %s\n", network.get_gateway());
 
     // Create Treasure data objects (Network, Database, Table, APIKey)
-    TreasureData_RESTAPI* heap  = new TreasureData_RESTAPI(&net,"test_database","heap_info", MBED_CONF_APP_API_KEY);
-    TreasureData_RESTAPI* cpu   = new TreasureData_RESTAPI(&net,"test_database","cpu_info",  MBED_CONF_APP_API_KEY);
-    TreasureData_RESTAPI* stack = new TreasureData_RESTAPI(&net,"test_database","stack_info",MBED_CONF_APP_API_KEY);
-    TreasureData_RESTAPI* sys   = new TreasureData_RESTAPI(&net,"test_database","sys_info",  MBED_CONF_APP_API_KEY);
+    TreasureData* heap  = new TreasureData(&network, MBED_CONF_APP_TD_DATABASE, "heap_info",  MBED_CONF_APP_TD_APIKEY);
+    TreasureData* cpu   = new TreasureData(&network, MBED_CONF_APP_TD_DATABASE, "cpu_info",   MBED_CONF_APP_TD_APIKEY);
+    TreasureData* stack = new TreasureData(&network, MBED_CONF_APP_TD_DATABASE, "stack_info", MBED_CONF_APP_TD_APIKEY);
+    TreasureData* sys   = new TreasureData(&network, MBED_CONF_APP_TD_DATABASE, "sys_info",   MBED_CONF_APP_TD_APIKEY);
 
     // Device Information Objects
-    mbed_stats_cpu_t    cpuinfo;
-    mbed_stats_heap_t   heapinfo;
-    mbed_stats_stack_t  stackinfo;
-    mbed_stats_sys_t    sysinfo;
+    mbed_stats_cpu_t   cpuinfo;
+    mbed_stats_heap_t  heapinfo;
+    mbed_stats_stack_t stackinfo;
+    mbed_stats_sys_t   sysinfo;
 
     // Buffers to create strings in
-    char cpu_buff  [BUFF_SIZE] = {0};
-    char heap_buff [BUFF_SIZE] = {0};
-    char stack_buff[BUFF_SIZE] = {0};
-    char sys_buff  [BUFF_SIZE] = {0};
+    char cpu_buff  [BUFF_SIZE];
+    char heap_buff [BUFF_SIZE];
+    char stack_buff[BUFF_SIZE];
+    char sys_buff  [BUFF_SIZE];
 
-    int x = 0;
+    int x;
 
     // Get device health data, send to Treasure Data every 10 seconds
-    while(1){
-        {
-            // Collect local data
-            mbed_stats_cpu_get(  &cpuinfo);
+    while (1) {
+      {
+        // Collect local data
+        mbed_stats_cpu_get(&cpuinfo);
 
-            // Construct strings to send
-            x = sprintf(cpu_buff,"{\"uptime\":\"%d\",\"idle_time\":\"%d\",\"sleep_time\":\"%d\",\"deep_sleep_time\":\"%d\"}",
-                                    cpuinfo.uptime,
-                                    cpuinfo.idle_time,
-                                    cpuinfo.sleep_time,
-                                    cpuinfo.deep_sleep_time);
-            cpu_buff[x]=0; // null terminate the string
+        // Construct strings to send
+        x = sprintf(cpu_buff,
+                    "{\"uptime\":\"%lld\",\"idle_time\":\"%lld\",\"sleep_time\":\"%lld\",\"deep_sleep_time\":\"%lld\"}",
+                    cpuinfo.uptime,
+                    cpuinfo.idle_time,
+                    cpuinfo.sleep_time,
+                    cpuinfo.deep_sleep_time);
+        cpu_buff[x] = 0; // null terminate the string
 
-            // Send data to Treasure data
-            printf("\r\n Sending CPU Data: '%s'\r\n",cpu_buff);
-            cpu->sendData(cpu_buff,strlen(cpu_buff));
-        }
-        {
-            // Collect local data
-            mbed_stats_heap_get(  &heapinfo);
+        // Send data to Treasure data
+        printf("\r\n Sending CPU Data: '%s'\r\n", cpu_buff);
+        cpu->sendData(cpu_buff, strlen(cpu_buff));
+      }
+      {
+        mbed_stats_heap_get(&heapinfo);
 
-            // Construct strings to send
-            x=sprintf(heap_buff,"{\"current_size\":\"%d\",\"max_size\":\"%d\",\"total_size\":\"%d\",\"reserved_size\":\"%d\",\"alloc_cnt\":\"%d\",\"alloc_fail_cnt\":\"%d\"}",
-                                heapinfo.current_size,
-                                heapinfo.max_size,
-                                heapinfo.total_size,
-                                heapinfo.reserved_size,
-                                heapinfo.alloc_cnt,
-                                heapinfo.alloc_fail_cnt);
-            heap_buff[x]=0; // null terminate the string
+        x = sprintf(heap_buff,
+                    "{\"current_size\":\"%d\",\"max_size\":\"%d\",\"total_size\":\"%d\",\"reserved_size\":\"%d\",\"alloc_cnt\":\"%d\",\"alloc_fail_cnt\":\"%d\"}",
+                    heapinfo.current_size,
+                    heapinfo.max_size,
+                    heapinfo.total_size,
+                    heapinfo.reserved_size,
+                    heapinfo.alloc_cnt,
+                    heapinfo.alloc_fail_cnt);
+        heap_buff[x] = 0;
 
-            // Send data to Treasure data
-            printf("\r\n Sending Heap Data: '%s'\r\n",heap_buff);
-            heap->sendData(heap_buff,strlen(heap_buff));
-        }
-        {
-            // Collect local data
-            mbed_stats_stack_get(  &stackinfo);
+        printf("\r\n Sending Heap Data: '%s'\r\n", heap_buff);
+        heap->sendData(heap_buff, strlen(heap_buff));
+      }
+      {
+        mbed_stats_stack_get(&stackinfo);
 
-            // Construct strings to send
-            x=sprintf(stack_buff,"{\"thread_id\":\"%d\",\"max_size\":\"%d\",\"reserved_size\":\"%d\",\"stack_cnt\":\"%d\"}",
-                                stackinfo.thread_id,
-                                stackinfo.max_size,
-                                stackinfo.reserved_size,
-                                stackinfo.stack_cnt);
-            stack_buff[x]=0; // null terminate the string
+        x = sprintf(stack_buff,
+                    "{\"thread_id\":\"%d\",\"max_size\":\"%d\",\"reserved_size\":\"%d\",\"stack_cnt\":\"%d\"}",
+                    stackinfo.thread_id,
+                    stackinfo.max_size,
+                    stackinfo.reserved_size,
+                    stackinfo.stack_cnt);
+        stack_buff[x] = 0;
 
-            // Send data to Treasure data
-            printf("\r\n Sending Stack Data: '%s'\r\n",stack_buff);
-            stack->sendData(stack_buff,strlen(stack_buff));
-        }
-        {
-            // Collect local data
-            mbed_stats_sys_get(  &sysinfo);
+        printf("\r\n Sending Stack Data: '%s'\r\n", stack_buff);
+        stack->sendData(stack_buff, strlen(stack_buff));
+      }
+      {
+        mbed_stats_sys_get(&sysinfo);
 
-            // Construct strings to send
-            x=sprintf(sys_buff,"{\"os_version\":\"%d\",\"cpu_id\":\"%d\",\"compiler_id\":\"%d\",\"compiler_version\":\"%d\"}",
-                                sysinfo.os_version,
-                                sysinfo.cpu_id,
-                                sysinfo.compiler_id,
-                                sysinfo.compiler_version);
-            sys_buff[x]=0; // null terminate the string
+        x = sprintf(sys_buff,
+                    "{\"os_version\":\"%d\",\"cpu_id\":\"%d\",\"compiler_id\":\"%d\",\"compiler_version\":\"%d\"}",
+                    sysinfo.os_version,
+                    sysinfo.cpu_id,
+                    sysinfo.compiler_id,
+                    sysinfo.compiler_version);
+        sys_buff[x] = 0;
 
-            // Send data to Treasure data
-            printf("\r\n Sending System Data: '%s'\r\n",sys_buff);
-            sys->sendData(sys_buff,strlen(sys_buff));
-        }
-        wait(10);
+        printf("\r\n Sending System Data: '%s'\r\n", sys_buff);
+        sys->sendData(sys_buff, strlen(sys_buff));
+      }
 
+      wait(10);
     }
 
-    net.disconnect();
+    network.disconnect();
 
-    printf("\nDone, x=%d\n",x);
-
-
+    printf("\nDone, x=%d\n", x);
 }

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef treasure_data_rest_h
-#define treasure_data_rest_h
+#ifndef TreasureData_H
+#define TreasureData_H
 
 #include "mbed.h"
 #include "http_request.h"
@@ -24,7 +24,7 @@
 
 // #define TD_DEBUG
 
-class TreasureData_RESTAPI {
+class TreasureData {
 
   NetworkInterface* network;
 
@@ -36,10 +36,10 @@ class TreasureData_RESTAPI {
 
 public:
 
-  TreasureData_RESTAPI(NetworkInterface* network,
-                       const char* database,
-                       const char* table,
-                       const char* apikey) {
+  TreasureData(NetworkInterface* network,
+               const char* database,
+               const char* table,
+               const char* apikey) {
 
     this->network = network;
 
