@@ -55,10 +55,7 @@ public:
   // Input expected to be JSON string
   // EX) "{\"key\":\"value\",}"
   int send_data(char* keyvalue, uint32_t size) {
-    HttpRequest* req;
-    HttpResponse* res;
-
-    req = new HttpRequest(network, HTTP_POST, urlbuff);
+    HttpRequest* req = new HttpRequest(network, HTTP_POST, urlbuff);
     req->set_header("Content-type", "application/json");
     req->set_header("Accept", "text/plain");
 
@@ -67,7 +64,7 @@ public:
       printf("Posting Data to %s", urlbuff);
     #endif
 
-    res = req->send(keyvalue, size);
+    HttpResponse* res = req->send(keyvalue, size);
     if (!res) {
       printf("HttpRequest failed (error code %d)\n", req->get_error());
       return 1;
