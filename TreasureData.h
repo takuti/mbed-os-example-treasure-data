@@ -54,7 +54,7 @@ public:
 
   // Input expected to be JSON string
   // EX) "{\"key\":\"value\",}"
-  int sendData(char* keyvalue, uint32_t size) {
+  int send_data(char* keyvalue, uint32_t size) {
     HttpRequest* req;
     HttpResponse* res;
 

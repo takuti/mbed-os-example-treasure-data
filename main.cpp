@@ -50,11 +50,7 @@ int main(void) {
     mbed_stats_stack_t stackinfo;
     mbed_stats_sys_t   sysinfo;
 
-    // Buffers to create strings in
-    char cpu_buff  [BUFF_SIZE];
-    char heap_buff [BUFF_SIZE];
-    char stack_buff[BUFF_SIZE];
-    char sys_buff  [BUFF_SIZE];
+    char buff[BUFF_SIZE];
 
     // Get device health data, send to Treasure Data every 10 seconds
     while (1) {
@@ -63,7 +59,7 @@ int main(void) {
         mbed_stats_cpu_get(&cpuinfo);
 
         // Construct strings to send
-        sprintf(cpu_buff,
+        sprintf(buff,
                 "{\"uptime\":%lld,\"idle_time\":%lld,\"sleep_time\":%lld,\"deep_sleep_time\":%lld}",
                 cpuinfo.uptime,
                 cpuinfo.idle_time,
@@ -71,13 +67,13 @@ int main(void) {
                 cpuinfo.deep_sleep_time);
 
         // Send data to Treasure data
-        printf("\r\n Sending CPU Data: '%s'\r\n", cpu_buff);
-        cpu->sendData(cpu_buff, strlen(cpu_buff));
+        printf("\r\n Sending CPU Data: '%s'\r\n", buff);
+        cpu->send_data(buff, strlen(buff));
       }
       {
         mbed_stats_heap_get(&heapinfo);
 
-        sprintf(heap_buff,
+        sprintf(buff,
                 "{\"current_size\":%d,\"max_size\":%d,\"total_size\":%d,\"reserved_size\":%d,\"alloc_cnt\":%d,\"alloc_fail_cnt\":%d}",
                 heapinfo.current_size,
                 heapinfo.max_size,
@@ -86,34 +82,34 @@ int main(void) {
                 heapinfo.alloc_cnt,
                 heapinfo.alloc_fail_cnt);
 
-        printf("\r\n Sending Heap Data: '%s'\r\n", heap_buff);
-        heap->sendData(heap_buff, strlen(heap_buff));
+        printf("\r\n Sending Heap Data: '%s'\r\n", buff);
+        heap->send_data(buff, strlen(buff));
       }
       {
         mbed_stats_stack_get(&stackinfo);
 
-        sprintf(stack_buff,
+        sprintf(buff,
                 "{\"thread_id\":%d,\"max_size\":%d,\"reserved_size\":%d,\"stack_cnt\":%d}",
                 stackinfo.thread_id,
                 stackinfo.max_size,
                 stackinfo.reserved_size,
                 stackinfo.stack_cnt);
 
-        printf("\r\n Sending Stack Data: '%s'\r\n", stack_buff);
-        stack->sendData(stack_buff, strlen(stack_buff));
+        printf("\r\n Sending Stack Data: '%s'\r\n", buff);
+        stack->send_data(buff, strlen(buff));
       }
       {
         mbed_stats_sys_get(&sysinfo);
 
-        sprintf(sys_buff,
+        sprintf(buff,
                 "{\"os_version\":%d,\"cpu_id\":%d,\"compiler_id\":%d,\"compiler_version\":%d}",
                 sysinfo.os_version,
                 sysinfo.cpu_id,
                 sysinfo.compiler_id,
                 sysinfo.compiler_version);
 
-        printf("\r\n Sending System Data: '%s'\r\n", sys_buff);
-        sys->sendData(sys_buff, strlen(sys_buff));
+        printf("\r\n Sending System Data: '%s'\r\n", buff);
+        sys->send_data(buff, strlen(buff));
       }
 
       wait(10);
