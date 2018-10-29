@@ -22,7 +22,7 @@
 #define URL_SIZE 200
 #define POST_BUFFER_SIZE 200
 
-// #define TD_DEBUG
+#define TD_DEBUG false
 
 class TreasureData {
 
@@ -63,7 +63,7 @@ public:
     req->set_header("Content-type", "application/json");
     req->set_header("Accept", "text/plain");
 
-    #ifdef TD_DEBUG
+    #if TD_DEBUG
       printf("\r\n Posting data: '%s'\r\n", keyvalue);
       printf("Posting Data to %s", urlbuff);
     #endif
@@ -74,7 +74,7 @@ public:
       return 1;
     }
 
-    #ifdef TD_DEBUG
+    #if TD_DEBUG
       printf("\n----- HTTP POST response -----\n");
       dump_response(res);
     #endif
@@ -86,7 +86,7 @@ public:
 
 private:
 
-#ifdef TD_DEBUG
+#if TD_DEBUG
   void dump_response(HttpResponse* res) {
     printf("Status: %d - %s\n", res->get_status_code(), res->get_status_message().c_str());
 
