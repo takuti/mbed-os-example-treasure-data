@@ -48,8 +48,7 @@ public:
     this->apikey = apikey;
 
     // Assemble URL
-    int x = sprintf(urlbuff, "http://in.treasuredata.com/postback/v3/event/%s/%s?td_write_key=%s", database, table, apikey);
-    urlbuff[x] = 0; // null terminate string
+    sprintf(urlbuff, "http://in.treasuredata.com/postback/v3/event/%s/%s?td_write_key=%s", database, table, apikey);
     printf("\r\n Sending to: %s", urlbuff);
   }
 
