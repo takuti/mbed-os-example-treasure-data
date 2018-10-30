@@ -26,20 +26,20 @@
 
 class TreasureData {
 
-  NetworkInterface* network;
+  NetworkInterface *network;
 
-  const char* apikey;
-  const char* table;
-  const char* database;
+  const char *apikey;
+  const char *table;
+  const char *database;
 
   char urlbuff[URL_SIZE];
 
 public:
 
-  TreasureData(NetworkInterface* network,
-               const char* database,
-               const char* table,
-               const char* apikey) {
+  TreasureData(NetworkInterface *network,
+               const char *database,
+               const char *table,
+               const char *apikey) {
 
     this->network = network;
 
@@ -54,8 +54,8 @@ public:
 
   // Input expected to be JSON string
   // EX) "{\"key\":\"value\",}"
-  int send_data(char* keyvalue, uint32_t size) {
-    HttpRequest* req = new HttpRequest(network, HTTP_POST, urlbuff);
+  int send_data(char *keyvalue, uint32_t size) {
+    HttpRequest *req = new HttpRequest(network, HTTP_POST, urlbuff);
     req->set_header("Content-type", "application/json");
     req->set_header("Accept", "text/plain");
 
@@ -64,7 +64,7 @@ public:
       printf("Posting Data to %s", urlbuff);
     #endif
 
-    HttpResponse* res = req->send(keyvalue, size);
+    HttpResponse *res = req->send(keyvalue, size);
     if (!res) {
       printf("HttpRequest failed (error code %d)\n", req->get_error());
       return 1;
@@ -83,7 +83,7 @@ public:
 private:
 
 #if TD_DEBUG
-  void dump_response(HttpResponse* res) {
+  void dump_response(HttpResponse *res) {
     printf("Status: %d - %s\n", res->get_status_code(), res->get_status_message().c_str());
 
     printf("Headers:\n");

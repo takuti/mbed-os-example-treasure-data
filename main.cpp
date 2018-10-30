@@ -35,7 +35,7 @@ int main(void) {
   }
   printf("Connected to the network\n\n");
 
-  TreasureData* td = new TreasureData(&network, TD_DATABASE, "sensor_data", TD_APIKEY);
+  TreasureData *td = new TreasureData(&network, TD_DATABASE, "sensor_data", TD_APIKEY);
 
   char buff[BUFF_SIZE];
 
