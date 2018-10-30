@@ -37,10 +37,10 @@ int main(void) {
   printf("Gateway: %s\n", network.get_gateway());
 
   // Create Treasure data objects (Network, Database, Table, APIKey)
-  TreasureData* heap  = new TreasureData(&network, MBED_CONF_APP_TD_DATABASE, "heap_info",  MBED_CONF_APP_TD_APIKEY);
-  TreasureData* cpu   = new TreasureData(&network, MBED_CONF_APP_TD_DATABASE, "cpu_info",   MBED_CONF_APP_TD_APIKEY);
-  TreasureData* stack = new TreasureData(&network, MBED_CONF_APP_TD_DATABASE, "stack_info", MBED_CONF_APP_TD_APIKEY);
-  TreasureData* sys   = new TreasureData(&network, MBED_CONF_APP_TD_DATABASE, "sys_info",   MBED_CONF_APP_TD_APIKEY);
+  TreasureData* heap  = new TreasureData(&network, TD_DATABASE, "heap_info",  TD_APIKEY);
+  TreasureData* cpu   = new TreasureData(&network, TD_DATABASE, "cpu_info",   TD_APIKEY);
+  TreasureData* stack = new TreasureData(&network, TD_DATABASE, "stack_info", TD_APIKEY);
+  TreasureData* sys   = new TreasureData(&network, TD_DATABASE, "sys_info",   TD_APIKEY);
 
   // Device Information Objects
   mbed_stats_cpu_t   cpuinfo;

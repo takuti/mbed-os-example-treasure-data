@@ -3,11 +3,15 @@
   "config": {
     "td.database": {
       "help": "Treasure Data database name",
-      "value": "\"YOUR DATABASE NAME\""
+      "macro_name": "TD_DATABASE",
+      "value": "\"YOUR DATABASE NAME\"",
+      "required": true
     },
     "td.apikey": {
       "help": "Treasure Data API key",
-      "value": "\"YOUR API KEY\""
+      "macro_name": "TD_APIKEY",
+      "value": "\"YOUR API KEY\"",
+      "required": true
     }
   }
 }
