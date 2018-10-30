@@ -14,11 +14,15 @@
  */
 
 #include "mbed.h"
-#include "TCPSocket.h"
+#include "C12832.h"
+#include "Sht31.h"
 #include "EthernetInterface.h"
 #include "TreasureData.h"
 
 #define BUFF_SIZE 100
+
+C12832 lcd(SPI_MOSI, SPI_SCK, SPI_MISO, p8, p11);
+Sht31 sht31(I2C_SDA, I2C_SCL);
 
 int main(void) {
   printf("\r\nTreasure Data REST API Demo\n");
@@ -29,86 +33,30 @@ int main(void) {
     printf("Cannot connect to the network\n");
     return 1;
   }
-
   printf("Connected to the network\n\n");
-  printf("MAC: %s\n", network.get_mac_address());
-  printf("IP: %s\n", network.get_ip_address());
-  printf("Netmask: %s\n", network.get_netmask());
-  printf("Gateway: %s\n", network.get_gateway());
 
-  // Create Treasure data objects (Network, Database, Table, APIKey)
-  TreasureData* heap  = new TreasureData(&network, TD_DATABASE, "heap_info",  TD_APIKEY);
-  TreasureData* cpu   = new TreasureData(&network, TD_DATABASE, "cpu_info",   TD_APIKEY);
-  TreasureData* stack = new TreasureData(&network, TD_DATABASE, "stack_info", TD_APIKEY);
-  TreasureData* sys   = new TreasureData(&network, TD_DATABASE, "sys_info",   TD_APIKEY);
-
-  // Device Information Objects
-  mbed_stats_cpu_t   cpuinfo;
-  mbed_stats_heap_t  heapinfo;
-  mbed_stats_stack_t stackinfo;
-  mbed_stats_sys_t   sysinfo;
+  TreasureData* td = new TreasureData(&network, TD_DATABASE, "sensor_data", TD_APIKEY);
 
   char buff[BUFF_SIZE];
 
   // Get device health data, send to Treasure Data every 10 seconds
   while (1) {
-    {
-      // Collect local data
-      mbed_stats_cpu_get(&cpuinfo);
+    lcd.cls();
 
-      // Construct strings to send
-      sprintf(buff,
-              "{\"uptime\":%lld,\"idle_time\":%lld,\"sleep_time\":%lld,\"deep_sleep_time\":%lld}",
-              cpuinfo.uptime,
-              cpuinfo.idle_time,
-              cpuinfo.sleep_time,
-              cpuinfo.deep_sleep_time);
+    float temp = sht31.readTemperature();
+    float humidity = sht31.readHumidity();
 
-      // Send data to Treasure data
-      printf("\r\n Sending CPU Data: '%s'\r\n", buff);
-      cpu->send_data(buff, strlen(buff));
-    }
-    {
-      mbed_stats_heap_get(&heapinfo);
+    lcd.locate(3, 3);
+    lcd.printf("Temperature: %.2f C", temp);
+    lcd.locate(3, 13);
+    lcd.printf("Humidity: %.2f %%", humidity);
 
-      sprintf(buff,
-              "{\"current_size\":%d,\"max_size\":%d,\"total_size\":%d,\"reserved_size\":%d,\"alloc_cnt\":%d,\"alloc_fail_cnt\":%d}",
-              heapinfo.current_size,
-              heapinfo.max_size,
-              heapinfo.total_size,
-              heapinfo.reserved_size,
-              heapinfo.alloc_cnt,
-              heapinfo.alloc_fail_cnt);
+    // Construct strings to send
+    sprintf(buff, "{\"temperature\":%f,\"humidity\":%f}", temp, humidity);
 
-      printf("\r\n Sending Heap Data: '%s'\r\n", buff);
-      heap->send_data(buff, strlen(buff));
-    }
-    {
-      mbed_stats_stack_get(&stackinfo);
-
-      sprintf(buff,
-              "{\"thread_id\":%d,\"max_size\":%d,\"reserved_size\":%d,\"stack_cnt\":%d}",
-              stackinfo.thread_id,
-              stackinfo.max_size,
-              stackinfo.reserved_size,
-              stackinfo.stack_cnt);
-
-      printf("\r\n Sending Stack Data: '%s'\r\n", buff);
-      stack->send_data(buff, strlen(buff));
-    }
-    {
-      mbed_stats_sys_get(&sysinfo);
-
-      sprintf(buff,
-              "{\"os_version\":%d,\"cpu_id\":%d,\"compiler_id\":%d,\"compiler_version\":%d}",
-              sysinfo.os_version,
-              sysinfo.cpu_id,
-              sysinfo.compiler_id,
-              sysinfo.compiler_version);
-
-      printf("\r\n Sending System Data: '%s'\r\n", buff);
-      sys->send_data(buff, strlen(buff));
-    }
+    // Send data to Treasure data
+    printf("\r\n Sending sensor data: '%s'\r\n", buff);
+    td->send_data(buff, strlen(buff));
 
     wait(10);
   }
