@@ -41,15 +41,18 @@ int main(void) {
   char buff[BUFF_SIZE];
 
   // Get sensor data, send to Treasure Data every TD_SEND_INTERVAL seconds
+  int cnt = 1;
   while (1) {
     lcd.cls();
 
     float temp = sht31.readTemperature();
     float humidity = sht31.readHumidity();
 
-    lcd.locate(3, 3);
+    lcd.locate(2, 2);
+    lcd.printf("Sent %d records to TD", cnt++);
+    lcd.locate(2, 12);
     lcd.printf("Temperature: %.2f C", temp);
-    lcd.locate(3, 13);
+    lcd.locate(2, 22);
     lcd.printf("Humidity: %.2f %%", humidity);
 
     // Construct strings to send
