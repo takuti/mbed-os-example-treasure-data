@@ -16,19 +16,12 @@ cd /path/to/mbed-simulator
 npm install
 ```
 
-Set target database name and your API key to [mbed_app.json](./mbed_app.json):
+Set target database name and your API key at the top of [main.cpp](./main.cpp):
 
-```json
-  "config": {
-    "td_database": {
-      "help": "Treasure Data database name",
-      "value": "\"TARGET DATABASE NAME\""
-    },
-    "td_apikey": {
-      "help": "Treasure Data API key",
-      "value": "\"YOUR API KEY\""
-    }
-  }
+```cpp
+const char *td_database = "TARGET_DATABASE_NAME";
+const char *td_table = "sensor_data";
+const char *td_apikey = "YOUR_API_KEY";
 ```
 
 Place this example under `mbed-simulator/demos/`, and build all demos:
