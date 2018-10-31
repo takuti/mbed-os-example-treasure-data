@@ -27,11 +27,7 @@
 class TreasureData {
 
   NetworkInterface *network;
-
   char *apikey;
-  char *table;
-  char *database;
-
   char urlbuff[URL_SIZE];
 
 public:
@@ -42,13 +38,10 @@ public:
                char *apikey) {
 
     this->network = network;
-
-    this->database = database;
-    this->table = table;
     this->apikey = apikey;
 
     // Assemble URL
-    sprintf(urlbuff, "http://in.treasuredata.com/postback/v3/event/%s/%s?td_write_key=%s", database, table, apikey);
+    sprintf(urlbuff, "http://in.treasuredata.com/postback/v3/event/%s/%s", database, table);
     printf("\r\n Sending to: %s", urlbuff);
   }
 
@@ -56,8 +49,8 @@ public:
   // EX) "{\"key\":\"value\",}"
   int send_data(char *keyvalue, uint32_t size) {
     HttpRequest *req = new HttpRequest(network, HTTP_POST, urlbuff);
-    req->set_header("Content-type", "application/json");
-    req->set_header("Accept", "text/plain");
+    req->set_header("Content-Type", "application/json");
+    req->set_header("X-TD-Write-Key", apikey);
 
     #if TD_DEBUG
       printf("\r\n Posting data: '%s'\r\n", keyvalue);
