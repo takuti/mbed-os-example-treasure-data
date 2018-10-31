@@ -40,7 +40,7 @@ int main(void) {
 
   char buff[BUFF_SIZE];
 
-  // Get device health data, send to Treasure Data every 10 seconds
+  // Get sensor data, send to Treasure Data every TD_SEND_INTERVAL seconds
   while (1) {
     lcd.cls();
 
