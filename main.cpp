@@ -20,6 +20,7 @@
 #include "TreasureData.h"
 
 #define BUFF_SIZE 100
+#define TD_SEND_INTERVAL 10
 
 C12832 lcd(SPI_MOSI, SPI_SCK, SPI_MISO, p8, p11);
 Sht31 sht31(I2C_SDA, I2C_SCL);
@@ -58,7 +59,7 @@ int main(void) {
     printf("\r\n Sending sensor data: '%s'\r\n", buff);
     td->send_data(buff, strlen(buff));
 
-    wait(10);
+    wait(TD_SEND_INTERVAL);
   }
 
   network.disconnect();
