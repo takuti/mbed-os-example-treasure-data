@@ -40,7 +40,7 @@ public:
     this->network = network;
     this->apikey = apikey;
 
-    // Assemble URL
+    // Assemble URL: https://support.treasuredata.com/hc/en-us/articles/360000675487-Postback-API
     sprintf(urlbuff, "http://in.treasuredata.com/postback/v3/event/%s/%s", database, table);
     printf("\r\n Sending to: %s", urlbuff);
   }
