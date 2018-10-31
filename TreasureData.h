@@ -28,18 +28,18 @@ class TreasureData {
 
   NetworkInterface *network;
 
-  const char *apikey;
-  const char *table;
-  const char *database;
+  char *apikey;
+  char *table;
+  char *database;
 
   char urlbuff[URL_SIZE];
 
 public:
 
   TreasureData(NetworkInterface *network,
-               const char *database,
-               const char *table,
-               const char *apikey) {
+               char *database,
+               char *table,
+               char *apikey) {
 
     this->network = network;
 
